@@ -35,10 +35,14 @@ class User(AbstractUser):
 
     LOCATION_CHOICES = [
         ("PESHAWAR", "Peshawar (Head Office)"),
-        ("KOHAT", "Kohat"),
-        ("NOWSHERA", "Nowshera"),
-        ("MARDAN", "Mardan"),
+        ("ABBOTTABAD", "Abbottabad"),
         ("DI_KHAN", "DI Khan"),
+        ("DDK", "DDK"),
+        ("THAKOT", "Thakot"),
+        ("HAYATABAD", "Hayatabad"),
+        ("MARDAN", "Mardan"),
+        ("NOWSHERA", "Nowshera"),
+        ("KOHAT", "Kohat"),
         ("SWH_RATTA_KULACHI", "SWH Ratta Kulachi"),
     ]
 

@@ -50,6 +50,8 @@ _LOCATION_NAME_ALIASES = {
     "DI_KHAN": ("DI Khan", "Dera Ismail Khan", "DIKhan"),
     "SWH_RATTA_KULACHI": ("Ratta Kulachi", "SWH Ratta Kulachi"),
     "THAKOT": ("Thakot",),
+    "DDK": ("DDK",),
+    "HAYATABAD": ("Hayatabad",),
     "SWAT": ("Swat",),
     "ABBOTTABAD": ("Abbottabad",),
     "MANSEHRA": ("Mansehra",),
