@@ -2,7 +2,23 @@ from pathlib import Path
 import os
 import shutil
 import sys
+import warnings
+
 from dotenv import load_dotenv
+
+# requests warns when urllib3/chardet/charset_normalizer are newer than its pinned range.
+# The client still works; keep worker logs free of that startup noise.
+warnings.filterwarnings(
+    "ignore",
+    message=r"urllib3 .* or chardet .*/charset_normalizer .* doesn't match a supported version",
+)
+# insightface 0.7 calls skimage SimilarityTransform.estimate(), deprecated in scikit-image 0.26.
+# Face alignment still works; silence the per-face FutureWarning until insightface updates.
+warnings.filterwarnings(
+    "ignore",
+    message=r"`estimate` is deprecated",
+    category=FutureWarning,
+)
 
 # -----------------------------
 # Base Directory
@@ -384,9 +400,22 @@ ATTENDANCE_CCTV_AUTOSTART = os.getenv("ATTENDANCE_CCTV_AUTOSTART", "False").lowe
     "1",
     "yes",
 )
-# shared = pull JPEG from ML Camera Session; rtsp = legacy independent OpenCV decode
-ATTENDANCE_CCTV_FRAME_SOURCE = os.getenv("ATTENDANCE_CCTV_FRAME_SOURCE", "shared").strip().lower()
+# snapshot = full-resolution JPEG from the camera/NVR (Hikvision ISAPI) each scan, falling back to
+# the shared session; shared = pull JPEG from ML Camera Session (1280x720); rtsp = own OpenCV decode
+ATTENDANCE_CCTV_FRAME_SOURCE = os.getenv("ATTENDANCE_CCTV_FRAME_SOURCE", "snapshot").strip().lower()
+ATTENDANCE_CCTV_SNAPSHOT_WIDTH = int(os.getenv("ATTENDANCE_CCTV_SNAPSHOT_WIDTH", "3840"))
+# Faces are found on a copy this wide, then measured on the full frame.
+ATTENDANCE_CCTV_DETECT_WIDTH = int(os.getenv("ATTENDANCE_CCTV_DETECT_WIDTH", "1280"))
+# Head-turn limits for matching. Ceiling cameras see people looking down at desks (~35-50° pitch).
+ATTENDANCE_CCTV_MAX_YAW = float(os.getenv("ATTENDANCE_CCTV_MAX_YAW", "60"))
+ATTENDANCE_CCTV_MAX_PITCH = float(os.getenv("ATTENDANCE_CCTV_MAX_PITCH", "55"))
 ATTENDANCE_INSIGHTFACE_MODEL = os.getenv("ATTENDANCE_INSIGHTFACE_MODEL", "buffalo_l")
+# CCTV recognition: seconds between scans, detector input size (640 shrinks small faces away),
+# smallest face width matched (smaller faces are tracked only), and Laplacian blur floor.
+ATTENDANCE_CCTV_SCAN_INTERVAL = float(os.getenv("ATTENDANCE_CCTV_SCAN_INTERVAL", "0.5"))
+ATTENDANCE_CCTV_DET_SIZE = int(os.getenv("ATTENDANCE_CCTV_DET_SIZE", "1280"))
+ATTENDANCE_CCTV_MIN_RECOG_FACE_PX = int(os.getenv("ATTENDANCE_CCTV_MIN_RECOG_FACE_PX", "80"))
+ATTENDANCE_CCTV_MIN_BLUR = float(os.getenv("ATTENDANCE_CCTV_MIN_BLUR", "20"))
 # Comma-separated ONNX providers override, e.g. "CUDAExecutionProvider,TensorrtExecutionProvider,CPUExecutionProvider"
 ATTENDANCE_ONNX_PROVIDERS = os.getenv("ATTENDANCE_ONNX_PROVIDERS", "")
 # Visitor Identity gallery — separate from staff attendance. Never punches attendance.
