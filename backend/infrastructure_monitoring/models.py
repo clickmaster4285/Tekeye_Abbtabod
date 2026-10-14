@@ -385,8 +385,8 @@ class InfraServerLog(models.Model):
             )
         ]
         indexes = [
-            models.Index(fields=["device", "-log_time"]),
-            models.Index(fields=["device", "category", "-log_time"]),
+            models.Index(fields=["device", "-log_time"], name="infrastruct_device__srvlog_idx"),
+            models.Index(fields=["device", "category", "-log_time"], name="infrastruct_device__srvcat_idx"),
         ]
 
     def __str__(self) -> str:
